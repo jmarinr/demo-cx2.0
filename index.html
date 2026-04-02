@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Nisato · Centro de Soporte Técnico</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#EAECF2;
+  --white:#FFFFFF;
+  --s2:#F5F6FA;
+  --s3:#EDEEF3;
+  --border:rgba(0,0,0,.07);
+  --border2:rgba(0,0,0,.11);
+  --sh:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --sh2:0 4px 14px rgba(0,0,0,.07),0 1px 3px rgba(0,0,0,.04);
+  --t1:#0C1220;
+  --t2:#586070;
+  --t3:#99A3AE;
+  --brand:#BF1B23;
+  --brand-s:rgba(191,27,35,.07);
+  --brand-m:rgba(191,27,35,.15);
+  --blue:#2563EB;
+  --blue-s:rgba(37,99,235,.07);
+  --blue-m:rgba(37,99,235,.15);
+  --green:#059669;
+  --green-s:rgba(5,150,105,.07);
+  --amber:#D97706;
+  --amber-s:rgba(217,119,6,.08);
+  --red:#DC2626;
+  --red-s:rgba(220,38,38,.07);
+  --f:'Outfit',sans-serif;
+  --m:'JetBrains Mono',monospace;
+  --r:10px;--rs:6px;--rl:14px;
+}
+html,body{height:100%;overflow:hidden;}
+body{font-family:var(--f);background:var(--bg);color:var(--t1);font-size:13px;line-height:1.5;}
+::-webkit-scrollbar{width:3px;height:3px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:rgba(0,0,0,.14);border-radius:3px;}
+
+/* ── APP ── */
+.app{display:flex;flex-direction:column;height:100vh;}
+.body{display:flex;flex:1;overflow:hidden;gap:10px;padding:10px;padding-top:0;}
+
+/* ════════════════════
+   HEADER
+════════════════════ */
+.hdr{
+  height:56px;min-height:56px;
+  background:var(--brand);
+  display:flex;align-items:center;
+  padding:0 18px;gap:0;
+}
+/* Nisato wordmark */
+.logo{
+  font-family:var(--f);font-size:22px;font-weight:700;
+  color:#fff;letter-spacing:-0.5px;line-height:1;
+  display:flex;align-items:center;gap:0;flex-shrink:0;
+}
+.logo-dot{
+  width:7px;height:7px;background:#fff;border-radius:50%;
+  margin-left:2px;margin-bottom:12px;opacity:.7;
+}
+.hdiv{width:1px;height:22px;background:rgba(255,255,255,.22);margin:0 16px;flex-shrink:0;}
+.h-agent{display:flex;align-items:center;gap:9px;}
+.h-av{
+  width:30px;height:30px;border-radius:50%;
+  background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.28);
+  display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;
+}
+.h-name{font-size:13px;font-weight:600;color:#fff;line-height:1.2;}
+.h-sub{font-size:9px;color:rgba(255,255,255,.55);font-family:var(--m);letter-spacing:.3px;}
+.hgap{flex:1;}
+.h-callbadge{
+  display:none;align-items:center;gap:7px;
+  background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.2);
+  border-radius:20px;padding:5px 12px;margin-right:10px;
+  font-family:var(--m);font-size:9px;color:#fff;font-weight:500;
+}
+.h-callbadge.show{display:flex;}
+.hcpulse{width:5px;height:5px;border-radius:50%;background:#FCD34D;animation:bl 1.1s infinite;}
+@keyframes bl{0%,100%{opacity:1}50%{opacity:.15}}
+.h-conn{
+  display:flex;align-items:center;gap:7px;
+  background:rgba(0,0,0,.16);border:1px solid rgba(255,255,255,.1);
+  border-radius:20px;padding:5px 12px;margin-right:10px;
+  font-family:var(--m);font-size:9px;color:rgba(255,255,255,.65);
+}
+.cdot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.25);flex-shrink:0;transition:background .3s;}
+.cdot.live{background:#34D399;animation:gp 2s infinite;}
+.cdot.warn{background:#FBBF24;}
+.cdot.err{background:#F87171;}
+@keyframes gp{0%,100%{box-shadow:0 0 0 0 rgba(52,211,153,.5);}50%{box-shadow:0 0 0 5px rgba(52,211,153,0);}}
+.btn-demo{
+  background:#fff;color:var(--brand);border:none;
+  padding:7px 16px;border-radius:var(--rs);
+  font-family:var(--f);font-size:12px;font-weight:700;letter-spacing:.1px;
+  cursor:pointer;display:flex;align-items:center;gap:6px;
+  box-shadow:0 2px 8px rgba(0,0,0,.18);
+  transition:background .15s,transform .1s;
+}
+.btn-demo:hover{background:#f2f2f2;}
+.btn-demo:active{transform:scale(.97);}
+.btn-demo:disabled{opacity:.38;cursor:default;}
+
+/* ════════════════════
+   COMMON PANEL
+════════════════════ */
+.panel{
+  background:var(--white);border-radius:var(--rl);
+  box-shadow:var(--sh2);border:1px solid var(--border);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.ph{
+  padding:12px 15px 11px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;flex-shrink:0;
+}
+.ph-title{font-size:10px;font-weight:700;color:var(--t2);letter-spacing:.7px;text-transform:uppercase;flex:1;}
+.live-pill{
+  display:flex;align-items:center;gap:5px;
+  background:var(--green-s);border:1px solid rgba(5,150,105,.18);
+  border-radius:20px;padding:3px 9px;
+  font-family:var(--m);font-size:8px;color:var(--green);font-weight:600;
+}
+.ldot{width:4px;height:4px;border-radius:50%;background:var(--green);animation:bl 1.2s infinite;}
+
+/* ════════════════════
+   LEFT
+════════════════════ */
+.left{width:224px;min-width:224px;margin-top:10px;}
+.proto-scroll{flex:1;overflow-y:auto;padding:10px 0 4px;}
+
+.ps{display:flex;align-items:flex-start;padding:0 13px;gap:0;}
+.ps-track{display:flex;flex-direction:column;align-items:center;margin-right:10px;flex-shrink:0;}
+.ps-dot{
+  width:24px;height:24px;border-radius:50%;
+  border:2px solid #D8DCE4;background:var(--white);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--m);font-size:9px;font-weight:600;color:var(--t3);
+  transition:all .3s cubic-bezier(.4,0,.2,1);flex-shrink:0;
+}
+.ps-line{width:2px;flex:1;min-height:12px;background:#D8DCE4;margin:3px 0;border-radius:2px;transition:background .35s;}
+.ps-body{padding:2px 0 16px;flex:1;}
+.ps-lbl{font-size:11px;font-weight:500;color:var(--t3);transition:color .3s;line-height:1.3;}
+.ps-hint{font-size:10px;color:var(--t3);max-height:0;overflow:hidden;opacity:0;transition:max-height .35s,opacity .3s;margin-top:1px;line-height:1.4;}
+
+.ps.done .ps-dot{border-color:var(--green);background:var(--green-s);color:var(--green);}
+.ps.done .ps-lbl{color:var(--t2);}
+.ps.done .ps-line{background:rgba(5,150,105,.35);}
+.ps.active .ps-dot{
+  border-color:var(--brand);background:var(--brand-s);color:var(--brand);
+  animation:rg 2.5s infinite;
+}
+.ps.active .ps-lbl{color:var(--t1);font-weight:600;}
+.ps.active .ps-hint{max-height:30px;opacity:1;}
+@keyframes rg{0%,100%{box-shadow:0 0 0 3px var(--brand-s);}50%{box-shadow:0 0 0 6px rgba(191,27,35,.03);}}
+
+.stats{border-top:1px solid var(--border);padding:10px;display:grid;grid-template-columns:1fr 1fr;gap:5px;}
+.sc{background:var(--s2);border:1px solid var(--border);border-radius:var(--r);padding:9px 11px;}
+.sv{font-family:var(--m);font-size:19px;font-weight:600;color:var(--t1);line-height:1;}
+.sv.g{color:var(--green);}
+.sv.a{color:var(--amber);}
+.sl{font-size:9px;font-weight:700;color:var(--t3);letter-spacing:.5px;text-transform:uppercase;margin-top:3px;}
+
+/* ════════════════════
+   CENTER
+════════════════════ */
+.center{flex:1;display:flex;flex-direction:column;gap:10px;margin-top:10px;overflow:hidden;min-width:0;}
+
+.t-panel{height:38%;min-height:38%;display:flex;flex-direction:column;overflow:hidden;}
+.t-body{flex:1;overflow-y:auto;padding:10px 14px;display:flex;flex-direction:column;gap:5px;}
+.t-empty{font-family:var(--m);font-size:10px;color:var(--t3);text-align:center;padding:14px;letter-spacing:.2px;}
+.tl{display:flex;align-items:flex-start;gap:8px;animation:fi .2s ease;}
+@keyframes fi{from{opacity:0;transform:translateY(3px);}to{opacity:1;transform:translateY(0);}}
+.tspk{
+  flex-shrink:0;font-family:var(--m);font-size:8px;font-weight:600;
+  padding:2px 7px;border-radius:4px;letter-spacing:.3px;text-transform:uppercase;margin-top:2px;
+}
+.tspk.ag{background:var(--blue-s);color:var(--blue);border:1px solid rgba(37,99,235,.14);}
+.tspk.cl{background:var(--brand-s);color:var(--brand);border:1px solid var(--brand-m);}
+.ttxt{font-size:12px;color:var(--t1);line-height:1.65;flex:1;}
+
+.tr-panel{flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0;}
+.tr-badges{display:flex;gap:6px;align-items:center;}
+.bprod{display:none;align-items:center;gap:5px;background:var(--s2);border:1px solid var(--border2);border-radius:20px;padding:4px 10px;font-family:var(--m);font-size:8px;color:var(--t2);font-weight:500;}
+.bprod.show{display:flex;}
+.bsym{display:none;background:var(--amber-s);border:1px solid rgba(217,119,6,.2);border-radius:20px;padding:4px 10px;font-family:var(--m);font-size:8px;color:var(--amber);font-weight:500;}
+.bsym.show{display:flex;}
+.tr-body{flex:1;overflow-y:auto;padding:10px 14px;}
+.tr-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:7px;font-family:var(--m);font-size:10px;color:var(--t3);text-align:center;letter-spacing:.2px;}
+.tr-ico{font-size:30px;opacity:.18;margin-bottom:3px;}
+
+.ts-list{display:flex;flex-direction:column;gap:4px;}
+.tsi{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:10px 12px;border-radius:var(--r);
+  border:1.5px solid var(--border);background:var(--s2);
+  transition:all .3s cubic-bezier(.4,0,.2,1);
+}
+.tsn{
+  width:21px;height:21px;border-radius:5px;
+  background:var(--white);border:1.5px solid #D8DCE4;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--m);font-size:9px;font-weight:700;color:var(--t3);
+  flex-shrink:0;transition:all .3s;
+}
+.tst{font-size:11.5px;color:var(--t2);line-height:1.55;flex:1;transition:color .3s;}
+.tsp{
+  flex-shrink:0;font-family:var(--m);font-size:8px;font-weight:600;
+  padding:2px 7px;border-radius:20px;background:var(--s3);color:var(--t3);
+  border:1px solid var(--border2);transition:all .3s;align-self:flex-start;margin-top:1px;white-space:nowrap;
+}
+.tsi.active{border-color:rgba(37,99,235,.3);background:var(--blue-s);box-shadow:0 0 0 3px rgba(37,99,235,.04);}
+.tsi.active .tsn{background:var(--blue-s);border-color:var(--blue);color:var(--blue);}
+.tsi.active .tst{color:var(--t1);font-weight:500;}
+.tsi.active .tsp{background:var(--blue-s);color:var(--blue);border-color:rgba(37,99,235,.22);}
+.tsi.done{border-color:rgba(5,150,105,.22);background:var(--green-s);}
+.tsi.done .tsn{background:var(--green-s);border-color:var(--green);color:var(--green);}
+.tsi.done .tst{color:var(--t3);text-decoration:line-through;text-decoration-color:rgba(5,150,105,.3);}
+.tsi.done .tsp{background:var(--green-s);color:var(--green);border-color:rgba(5,150,105,.2);}
+.tsi.failed{border-color:rgba(220,38,38,.18);background:var(--red-s);}
+.tsi.failed .tsn{background:var(--red-s);border-color:var(--red);color:var(--red);}
+.tsi.failed .tst{color:var(--t3);text-decoration:line-through;text-decoration-color:rgba(220,38,38,.28);}
+.tsi.failed .tsp{background:var(--red-s);color:var(--red);border-color:rgba(220,38,38,.18);}
+
+/* ════════════════════
+   RIGHT
+════════════════════ */
+.right{width:264px;min-width:264px;display:flex;flex-direction:column;gap:10px;margin-top:10px;overflow-y:auto;overflow-x:hidden;padding-bottom:2px;}
+.rsec{background:var(--white);border-radius:var(--rl);box-shadow:var(--sh2);border:1px solid var(--border);overflow:hidden;flex-shrink:0;}
+.r-empty{font-family:var(--m);font-size:10px;color:var(--t3);padding:12px 14px;letter-spacing:.1px;}
+
+/* Customer */
+.cfields{padding:10px 14px;}
+.cf{display:flex;gap:8px;padding:2px 0;align-items:baseline;}
+.cfl{font-size:10px;font-weight:700;color:var(--t3);white-space:nowrap;min-width:70px;letter-spacing:.2px;}
+.cfv{font-size:12px;color:var(--t1);font-weight:500;}
+.pcard{display:none;align-items:center;gap:11px;background:var(--s2);border-top:1px solid var(--border);padding:10px 14px;}
+.pcard.show{display:flex;}
+.pico{font-size:22px;}
+.pname{font-size:12px;font-weight:600;color:var(--t1);}
+.pdet{font-size:9px;color:var(--t3);font-family:var(--m);margin-top:2px;}
+
+/* Sentiment */
+.sb{padding:12px 14px;}
+.sr{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+.se{font-size:32px;line-height:1;transition:transform .25s;}
+.si{}
+.sl2{font-size:14px;font-weight:700;transition:color .3s;}
+.sd{font-size:10px;color:var(--t2);margin-top:2px;line-height:1.4;font-style:italic;}
+.strack{height:4px;background:var(--s3);border-radius:4px;overflow:hidden;}
+.sfill{height:100%;border-radius:4px;width:50%;transition:width .9s cubic-bezier(.4,0,.2,1),background .5s;}
+
+/* Ticket */
+.tickb{padding:4px 0;}
+.t-empty2{font-family:var(--m);font-size:10px;color:var(--t3);padding:12px 14px;letter-spacing:.1px;}
+.t-building{padding:12px 14px;display:flex;flex-direction:column;gap:8px;}
+.t-spin-row{display:flex;align-items:center;gap:8px;font-family:var(--m);font-size:9px;color:var(--t2);font-weight:600;}
+.tspin{width:11px;height:11px;border:2px solid var(--s3);border-top-color:var(--blue);border-radius:50%;animation:spin .5s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.tf{display:flex;flex-direction:column;gap:2px;margin-bottom:5px;opacity:0;animation:tfa .25s ease forwards;}
+@keyframes tfa{to{opacity:1;}}
+.tfl{font-size:8px;font-weight:700;color:var(--t3);letter-spacing:.5px;text-transform:uppercase;}
+.tfv{font-size:11px;color:var(--t1);font-weight:500;}
+.t-success{display:none;flex-direction:column;align-items:center;padding:18px 14px;gap:6px;animation:pk .5s cubic-bezier(.34,1.56,.64,1);}
+@keyframes pk{from{opacity:0;transform:scale(.84);}to{opacity:1;transform:scale(1);}}
+.t-success.show{display:flex;}
+.tick-check{width:42px;height:42px;border-radius:50%;background:var(--green-s);border:2px solid rgba(5,150,105,.25);display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:2px;}
+.tick-num{font-family:var(--m);font-size:17px;font-weight:700;color:var(--t1);letter-spacing:.4px;}
+.tick-meta{font-family:var(--m);font-size:8px;color:var(--t3);text-align:center;line-height:1.6;}
+.tick-acts{display:flex;gap:5px;width:100%;margin-top:5px;}
+.tbtn{flex:1;background:var(--s2);border:1.5px solid var(--border2);color:var(--t2);padding:7px;border-radius:var(--rs);font-family:var(--f);font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;}
+.tbtn:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-s);}
+.tbtn.ok{background:var(--green-s);border-color:rgba(5,150,105,.22);color:var(--green);}
+
+/* Toast */
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--t1);color:#fff;padding:9px 18px;border-radius:var(--r);font-family:var(--m);font-size:9px;font-weight:500;z-index:9999;transition:transform .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none;white-space:nowrap;box-shadow:0 8px 28px rgba(0,0,0,.2);letter-spacing:.2px;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- HEADER -->
+  <div class="hdr">
+    <div class="logo">NISATO<div class="logo-dot"></div></div>
+    <div class="hdiv"></div>
+    <div class="h-agent">
+      <div class="h-av">👤</div>
+      <div>
+        <div class="h-name">Carlos López</div>
+        <div class="h-sub">Soporte Técnico · T. 08:00 – 16:00</div>
+      </div>
+    </div>
+    <div class="hgap"></div>
+    <div class="h-callbadge" id="callbadge"><div class="hcpulse"></div>LLAMADA ACTIVA</div>
+    <div class="h-conn"><div class="cdot" id="cdot"></div><span id="clbl">iniciando</span></div>
+    <button class="btn-demo" id="btn-demo" onclick="runDemo()">▶&nbsp; Demo llamada</button>
+  </div>
+
+  <!-- BODY -->
+  <div class="body">
+
+    <!-- LEFT -->
+    <div class="left panel">
+      <div class="ph"><span class="ph-title">Protocolo de atención</span></div>
+      <div class="proto-scroll" id="proto-list"></div>
+      <div class="stats">
+        <div class="sc"><div class="sv" id="st-calls">14</div><div class="sl">Llamadas</div></div>
+        <div class="sc"><div class="sv" id="st-tickets">3</div><div class="sl">Tickets</div></div>
+        <div class="sc"><div class="sv g" id="st-sat">4.7</div><div class="sl">Satisfac.</div></div>
+        <div class="sc"><div class="sv a" id="st-aht">04:12</div><div class="sl">AHT prom.</div></div>
+      </div>
+    </div>
+
+    <!-- CENTER -->
+    <div class="center">
+
+      <div class="t-panel panel">
+        <div class="ph">
+          <span class="ph-title">Transcripción en vivo</span>
+          <div class="live-pill"><div class="ldot"></div>EN VIVO</div>
+        </div>
+        <div class="t-body" id="t-body">
+          <div class="t-empty" id="t-empty">Esperando inicio de llamada…</div>
+        </div>
+      </div>
+
+      <div class="tr-panel panel">
+        <div class="ph">
+          <span class="ph-title">Guía de troubleshooting</span>
+          <div class="tr-badges">
+            <div class="bprod" id="bprod"><span id="bpico"></span>&thinsp;<span id="bptxt"></span></div>
+            <div class="bsym" id="bsym"></div>
+          </div>
+        </div>
+        <div class="tr-body" id="tr-body">
+          <div class="tr-empty" id="tr-empty"><div class="tr-ico">🔧</div><span>El sistema cargará la guía<br>cuando detecte el producto y síntoma</span></div>
+          <div class="ts-list" id="ts-list" style="display:none;"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT -->
+    <div class="right">
+
+      <div class="rsec">
+        <div class="ph"><span class="ph-title">Información del cliente</span></div>
+        <div id="c-empty" class="r-empty">Sin datos aún</div>
+        <div id="c-fields" class="cfields" style="display:none;">
+          <div class="cf"><span class="cfl">Nombre</span><span class="cfv" id="cf-nom">—</span></div>
+          <div class="cf"><span class="cfl">N° Cliente</span><span class="cfv" id="cf-num">—</span></div>
+        </div>
+        <div class="pcard" id="pcard"><div class="pico" id="pc-ico">📦</div><div><div class="pname" id="pc-name">—</div><div class="pdet" id="pc-det">—</div></div></div>
+      </div>
+
+      <div class="rsec">
+        <div class="ph"><span class="ph-title">Sentimiento del cliente</span></div>
+        <div class="sb">
+          <div class="sr"><div class="se" id="sent-emo">😐</div><div class="si"><div class="sl2" id="sent-lbl" style="color:var(--t2);">Neutro</div><div class="sd" id="sent-desc">Esperando llamada…</div></div></div>
+          <div class="strack"><div class="sfill" id="sent-fill" style="width:50%;background:var(--amber);"></div></div>
+        </div>
+      </div>
+
+      <div class="rsec">
+        <div class="ph"><span class="ph-title">Ticket de soporte</span></div>
+        <div class="tickb">
+          <div id="tick-empty" class="t-empty2">Sin escalación activa</div>
+          <div id="tick-bld" class="t-building" style="display:none;">
+            <div class="t-spin-row"><div class="tspin"></div>Generando en Nisato Helpdesk…</div>
+            <div id="tick-fields"></div>
+          </div>
+          <div class="t-success" id="tick-ok">
+            <div class="tick-check">✅</div>
+            <div class="tick-num" id="tick-num">—</div>
+            <div class="tick-meta" id="tick-meta">—</div>
+            <div class="tick-acts">
+              <button class="tbtn" onclick="copyTick()">📋 Copiar</button>
+              <button class="tbtn ok">✓ Registrado</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const CFG={
+  NEGOTIATE_URL:'https://cc-services-h6gpc0gzdyfkdabj.eastus2-01.azurewebsites.net/api/cc-rtt-client',
+  AUTH_TOKEN:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50IjoiYXVkYXJhLXVzZXIiLCJleHAiOjE2ODk1NDg4MDB9.yRL7N2kx-vUhQYjVYeNRnRbJQbV4PxT0vI_4TzDE4xY',
+  RECONNECT:5000,
+};
+const PROTO=[
+  {id:1,l:'Saludo y bienvenida',      i:'👋',h:'Identificarse como agente Nisato'},
+  {id:2,l:'Identificación del cliente',i:'👤',h:'Nombre y número de cliente'},
+  {id:3,l:'Identificación del equipo', i:'🏷️',h:'Producto, marca y modelo'},
+  {id:4,l:'Diagnóstico del síntoma',   i:'🔍',h:'Describir el problema con detalle'},
+  {id:5,l:'Troubleshooting guiado',    i:'🔧',h:'Seguir pasos según el síntoma'},
+  {id:6,l:'Resolución / Escalación',   i:'✅',h:'Resolver en línea o crear ticket'},
+  {id:7,l:'Cierre y seguimiento',      i:'🎯',h:'Confirmar satisfacción y despedirse'},
+];
+const TSHOOT={
+  lavadora:{
+    'no desagua':['Verificar que la manguera de desagüe no esté doblada ni bloqueada','Limpiar el filtro de la bomba (frontal inferior, giro antihorario)','Ejecutar ciclo de centrifugado manual para forzar el desagüe','Revisar código de error en pantalla — E21/F21 = bomba; E22 = obstrucción','Verificar que el desagüe del hogar no esté tapado de forma independiente'],
+    'no enciende':['Verificar que el cable de alimentación esté firmemente conectado','Revisar el disyuntor o breaker del circuito correspondiente','Confirmar que la puerta cierre completamente (activa el seguro)','Mantener presionado el botón de encendido 5 segundos para reset','Buscar quemaduras visibles o daños en el tablero de control'],
+    'no centrifuga':['Verificar que la carga esté distribuida de forma uniforme en el tambor','Reducir carga al 50% y repetir el ciclo de centrifugado','Revisar que el seguro de puerta esté activando correctamente','Ejecutar ciclo de centrifugado en modo independiente','Anotar cualquier código de error visible en la pantalla'],
+    'hace ruido':['Nivelar la lavadora ajustando las cuatro patas manualmente','Revisar que no haya objetos extraños en el tambor o en la bomba','Confirmar que los tornillos de transporte traseros hayan sido retirados','Identificar si el ruido ocurre al lavar, centrifugar o en ambas fases','Reducir carga al 50% y evaluar si el ruido disminuye'],
+  },
+  refrigerador:{
+    'no enfría':['Verificar que el termostato esté en posición correcta (nivel 3–5)','Revisar que las rejillas de ventilación internas no estén obstruidas','Comprobar la integridad del sello de goma en todas las puertas','Limpiar el condensador trasero de polvo con brocha o aspiradora','Escuchar si el compresor enciende (zumbido a los 15–20 min)'],
+    'hace ruido':['Nivelar el refrigerador ajustando sus patas o ruedas traseras','Retirar objetos colocados encima que puedan vibrar','Verificar que el ventilador del evaporador no esté bloqueado con hielo','Identificar si el ruido es constante o solo en ciclos de enfriamiento','Revisar si el origen proviene del compresor o del área del congelador'],
+    'fuga de agua':['Revisar si el orificio de desagüe interior está obstruido con hielo','Verificar que la bandeja debajo no esté llena ni desbordada','Comprobar que el sello de la puerta no esté dañado ni deformado','Confirmar nivel del equipo — leve inclinación trasera es correcta','Verificar conexión de línea de agua si tiene dispensador integrado'],
+  },
+  cocina:{
+    'quemador no enciende':['Confirmar que las tapas y rejillas del quemador estén bien colocadas','Limpiar orificios del quemador con aguja fina sin ensancharlos','Verificar que el ignitor esté seco y sin residuos de alimentos','Probar con encendedor manual para aislar falla eléctrica vs. de gas','Confirmar que la llave de paso de gas esté completamente abierta'],
+    'horno no calienta':['Verificar temperatura programada — mínimo 150 °C para prueba básica','Confirmar modo "Horno convencional" y no "Grill" ni "Timer"','Colocar papel a 200 °C durante 10 min para verificar que se dore','Revisar si el elemento calefactor inferior tiene zonas quemadas visibles','Evaluar descalibración del termostato — ±30 °C es tolerancia normal'],
+  },
+};
+const PICO={lavadora:'🫧',refrigerador:'🧊',cocina:'🍳'};
+
+function renderProto(){
+  const el=document.getElementById('proto-list'); el.innerHTML='';
+  PROTO.forEach((s,i)=>{
+    const d=document.createElement('div'); d.className='ps'; d.id='ps'+s.id;
+    d.innerHTML=`<div class="ps-track"><div class="ps-dot" id="pd${s.id}">${s.id}</div>${i<PROTO.length-1?'<div class="ps-line"></div>':''}</div><div class="ps-body"><div class="ps-lbl">${s.i} ${s.l}</div><div class="ps-hint">${s.h}</div></div>`;
+    el.appendChild(d);
+  });
+}
+function setStep(n){
+  PROTO.forEach(s=>{
+    const ps=document.getElementById('ps'+s.id);const pd=document.getElementById('pd'+s.id);if(!ps)return;
+    ps.classList.remove('done','active');
+    if(s.id<n){ps.classList.add('done');pd.textContent='✓';}
+    else if(s.id===n){ps.classList.add('active');pd.textContent=s.id;}
+    else pd.textContent=s.id;
+  });
+}
+function addLine(spk,txt){
+  const b=document.getElementById('t-body');const e=document.getElementById('t-empty');if(e)e.remove();
+  const d=document.createElement('div');d.className='tl';const ag=spk==='agente';
+  d.innerHTML=`<span class="tspk ${ag?'ag':'cl'}">${ag?'Agente':'Cliente'}</span><span class="ttxt">${txt}</span>`;
+  b.appendChild(d);b.scrollTop=b.scrollHeight;
+}
+function loadTS(prod,symp){
+  const steps=TSHOOT[prod]?.[symp];if(!steps)return;
+  const bp=document.getElementById('bprod');bp.classList.add('show');
+  document.getElementById('bpico').textContent=PICO[prod]||'📦';
+  document.getElementById('bptxt').textContent=prod.charAt(0).toUpperCase()+prod.slice(1);
+  const bs=document.getElementById('bsym');bs.classList.add('show');bs.textContent=symp;
+  document.getElementById('tr-empty').style.display='none';
+  const list=document.getElementById('ts-list');list.style.display='flex';list.innerHTML='';
+  steps.forEach((s,i)=>{
+    const item=document.createElement('div');item.className='tsi';item.id='tsi'+i;
+    item.innerHTML=`<div class="tsn" id="tsn${i}">${i+1}</div><div class="tst">${s}</div><div class="tsp" id="tsp${i}">Pendiente</div>`;
+    item.style.opacity='0';item.style.transform='translateY(5px)';
+    list.appendChild(item);
+    setTimeout(()=>{item.style.transition='opacity .2s ease,transform .2s ease';item.style.opacity='1';item.style.transform='translateY(0)';},i*65);
+  });
+}
+function setTSI(i,state){
+  const item=document.getElementById('tsi'+i);const n=document.getElementById('tsn'+i);const p=document.getElementById('tsp'+i);
+  if(!item)return;
+  item.classList.remove('active','done','failed');item.classList.add(state);
+  const lbl={active:'En curso',done:'Resuelto',failed:'No aplica'};
+  p.textContent=lbl[state]||'';
+  if(state==='active'){n.textContent=i+1;item.scrollIntoView({behavior:'smooth',block:'nearest'});}
+  else if(state==='done')n.textContent='✓';
+  else if(state==='failed')n.textContent='✗';
+}
+function setCustomer({nom,num}){
+  document.getElementById('c-empty').style.display='none';
+  document.getElementById('c-fields').style.display='block';
+  document.getElementById('cf-nom').textContent=nom||'—';
+  document.getElementById('cf-num').textContent=num||'—';
+  document.getElementById('callbadge').classList.add('show');
+}
+function setProduct({prod,marca,modelo}){
+  const c=document.getElementById('pcard');c.classList.add('show');
+  document.getElementById('pc-ico').textContent=PICO[prod]||'📦';
+  document.getElementById('pc-name').textContent=(marca||'')+' '+(modelo||'');
+  document.getElementById('pc-det').textContent=prod?prod.charAt(0).toUpperCase()+prod.slice(1):'';
+}
+function setSentiment(val,desc){
+  const map={'-1':{e:'😠',l:'Molesto',c:'var(--red)',p:10,g:'linear-gradient(90deg,#DC2626,#F87171)'},'0':{e:'😐',l:'Neutro',c:'var(--amber)',p:50,g:'linear-gradient(90deg,#D97706,#FCD34D)'},'1':{e:'😊',l:'Satisfecho',c:'var(--green)',p:88,g:'linear-gradient(90deg,#059669,#34D399)'}};
+  const c=map[String(val)]||map['0'];
+  const emo=document.getElementById('sent-emo');emo.style.transform='scale(1.18)';setTimeout(()=>emo.style.transform='scale(1)',200);emo.textContent=c.e;
+  const lbl=document.getElementById('sent-lbl');lbl.textContent=c.l;lbl.style.color=c.c;
+  document.getElementById('sent-desc').textContent=desc||'';
+  const fill=document.getElementById('sent-fill');fill.style.width=c.p+'%';fill.style.background=c.g;
+}
+async function createTicket({nom,num,prod,sint}){
+  document.getElementById('tick-empty').style.display='none';
+  document.getElementById('tick-bld').style.display='flex';
+  const fields=[{l:'Cliente',v:nom},{l:'N° Cliente',v:num},{l:'Equipo',v:prod},{l:'Síntoma',v:sint},{l:'Prioridad',v:'Alta'},{l:'Canal',v:'Teléfono · Nisato Helpdesk'}];
+  const fe=document.getElementById('tick-fields');fe.innerHTML='';
+  for(let i=0;i<fields.length;i++){
+    await w(420);
+    const f=document.createElement('div');f.className='tf';f.style.animationDelay='0ms';
+    f.innerHTML=`<div class="tfl">${fields[i].l}</div><div class="tfv">${fields[i].v}</div>`;
+    fe.appendChild(f);
+  }
+}
+function finishTicket(num){
+  document.getElementById('tick-bld').style.display='none';
+  const s=document.getElementById('tick-ok');s.classList.add('show');
+  document.getElementById('tick-num').textContent='#'+num;
+  const now=new Date();
+  document.getElementById('tick-meta').textContent=`Creado ${now.getDate().toString().padStart(2,'0')}/${(now.getMonth()+1).toString().padStart(2,'0')}/${now.getFullYear()} · ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+  document.getElementById('st-tickets').textContent=String(parseInt(document.getElementById('st-tickets').textContent)+1);
+  toast('🎟 Ticket #'+num+' creado en Nisato Helpdesk');
+}
+function copyTick(){
+  const n=document.getElementById('tick-num').textContent;navigator.clipboard?.writeText(n).catch(()=>{});toast('✓ Número copiado: '+n);
+}
+function setStatus(t,s){document.getElementById('cdot').className='cdot '+s;document.getElementById('clbl').textContent=t;}
+async function connectWPS(){
+  try{
+    setStatus('conectando','warn');
+    const r=await fetch(CFG.NEGOTIATE_URL+'?userId=soporte-'+Date.now(),{headers:{'Authorization':'Bearer '+CFG.AUTH_TOKEN}});
+    if(!r.ok)throw new Error('Negotiate '+r.status);
+    const {url}=await r.json();const ws=new WebSocket(url);window._ws=ws;
+    ws.onopen=()=>setStatus('conectado','live');
+    ws.onclose=()=>{setStatus('desconectado','err');setTimeout(connectWPS,CFG.RECONNECT);};
+    ws.onerror=()=>setStatus('error','err');
+    ws.onmessage=e=>{try{const raw=JSON.parse(e.data);let p;if(raw.content!==undefined)p=typeof raw.content==='string'?JSON.parse(raw.content):raw.content;else if(raw.data!==undefined)p=typeof raw.data==='string'?JSON.parse(raw.data):raw.data;else p=raw;handleMsg(p);}catch(err){console.error('WS:',err);}};
+  }catch(err){setStatus('error','err');setTimeout(connectWPS,CFG.RECONNECT);}
+}
+function handleMsg(p){
+  if(!p)return;
+  if(p.transcript&&p.speaker){addLine(p.speaker,p.transcript);return;}
+  if(p.type==='analysis'&&p.data){
+    try{
+      const d=JSON.parse(p.data.replace(/```json|```/g,'').trim());
+      if(d.protocolo_paso)setStep(d.protocolo_paso);
+      if(d.nombre_cliente||d.numero_cliente)setCustomer({nom:d.nombre_cliente,num:d.numero_cliente});
+      if(d.producto)setProduct({prod:d.producto,marca:d.marca,modelo:d.modelo});
+      if(d.sintoma&&d.producto)loadTS(d.producto,d.sintoma);
+      if(d.sentimiento_cliente!=null){const sv=d.sentimiento_cliente?.valor??d.sentimiento_cliente;setSentiment(sv,d.sentimiento_cliente?.descripcion||'');}
+      if(d.crear_ticket){createTicket({nom:d.nombre_cliente,num:d.numero_cliente,prod:(d.marca||'')+' '+(d.modelo||''),sint:d.sintoma}).then(()=>finishTicket('NST-'+new Date().getFullYear()+'-'+Math.floor(1000+Math.random()*8999)));}
+    }catch(e){console.warn(e);}
+  }
+}
+const w=ms=>new Promise(r=>setTimeout(r,ms));
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),3000);}
+function resetUI(){
+  document.getElementById('t-body').innerHTML='<div class="t-empty" id="t-empty">Esperando inicio de llamada…</div>';
+  PROTO.forEach(s=>{const ps=document.getElementById('ps'+s.id);const pd=document.getElementById('pd'+s.id);if(ps)ps.classList.remove('done','active');if(pd)pd.textContent=s.id;});
+  document.getElementById('tr-empty').style.display='flex';document.getElementById('ts-list').style.display='none';document.getElementById('ts-list').innerHTML='';
+  document.getElementById('bprod').classList.remove('show');document.getElementById('bsym').classList.remove('show');
+  document.getElementById('c-empty').style.display='block';document.getElementById('c-fields').style.display='none';document.getElementById('pcard').classList.remove('show');document.getElementById('callbadge').classList.remove('show');
+  setSentiment(0,'Esperando llamada…');
+  document.getElementById('tick-empty').style.display='block';document.getElementById('tick-bld').style.display='none';document.getElementById('tick-fields').innerHTML='';document.getElementById('tick-ok').classList.remove('show');
+}
+async function runDemo(){
+  const btn=document.getElementById('btn-demo');btn.disabled=true;btn.textContent='⏳  En llamada…';
+  resetUI();
+  await w(350);setStep(1);
+  addLine('agente','Buenos días, habla con Carlos López de Soporte Técnico Nisato. ¿En qué le puedo ayudar hoy?');
+  await w(2800);addLine('cliente','Hola buenos días. Soy María González, mi número de cliente es 48291. Tengo un problema con mi lavadora que lleva días sin funcionar bien.');
+  await w(900);setStep(2);setCustomer({nom:'María González',num:'48291'});setSentiment(0,'Tranquila pero con urgencia');toast('Cliente identificado');
+  await w(1100);addLine('agente','Con gusto, María. ¿Me podría indicar la marca y modelo de su lavadora?');
+  await w(2500);addLine('cliente','Es una Samsung. El modelo que aparece al frente es WF18T8000. La compré hace casi dos años.');
+  await w(900);setStep(3);setProduct({prod:'lavadora',marca:'Samsung',modelo:'WF18T8000'});toast('Equipo identificado');
+  await w(1100);addLine('agente','Gracias. ¿Cuál es exactamente el problema que está presentando?');
+  await w(2500);addLine('cliente','Al terminar el ciclo el agua se queda adentro y no sale. No drena nada.');
+  await w(900);setStep(4);setSentiment(0,'Algo molesta, lleva días con el problema');toast('Síntoma detectado: no desagua');loadTS('lavadora','no desagua');
+  await w(600);setStep(5);
+  await w(900);setTSI(0,'active');addLine('agente','Revisemos primero la manguera de desagüe. ¿Está recta, sin dobleces ni bloqueos?');
+  await w(2800);addLine('cliente','Ya la revisé y está bien. Recta y sin ningún bloqueo.');
+  await w(700);setTSI(0,'failed');setTSI(1,'active');
+  await w(800);addLine('agente','Ahora el filtro de la bomba, en la parte frontal inferior detrás de una pequeña tapa.');
+  await w(2800);addLine('cliente','Lo limpié la semana pasada y estaba completamente limpio.');
+  await w(700);setTSI(1,'failed');setTSI(2,'active');setSentiment(-1,'Comienza a mostrar frustración');
+  await w(800);addLine('agente','Ejecutemos solo el ciclo de centrifugado para intentar forzar que el agua salga.');
+  await w(3000);addLine('cliente','Lo he intentado varias veces estos días y sigue igual. No drena nada de agua.');
+  await w(700);setTSI(2,'failed');setTSI(3,'active');
+  await w(800);addLine('agente','¿Hay algún código de error parpadeando en la pantalla de la lavadora en este momento?');
+  await w(2500);addLine('cliente','Sí, está parpadeando el código E21 en la pantalla.');
+  await w(700);setTSI(3,'done');setSentiment(-1,'Preocupada, quiere una solución definitiva');toast('⚠ E21 = falla en bomba de drenaje → escalar');
+  await w(1200);setStep(6);addLine('agente','El código E21 indica falla en la bomba de drenaje. Requiere revisión técnica presencial. Le creo un ticket ahora mismo.');
+  await w(700);await createTicket({nom:'María González',num:'48291',prod:'Lavadora Samsung WF18T8000',sint:'No drena — Error E21 (bomba de drenaje)'});
+  await w(500);finishTicket('NST-2026-0847');
+  await w(1800);addLine('cliente','¿Cuánto tiempo tardaría el técnico en llegar?');
+  await w(2000);addLine('agente','Un técnico certificado la contactará en las próximas 24 horas. El ticket es NST-2026-0847, guárdelo como referencia.');
+  await w(2500);addLine('cliente','Perfecto, muchas gracias Carlos. Muy amable.');
+  await w(800);setSentiment(1,'Satisfecha con la atención recibida');setStep(7);
+  await w(900);addLine('agente','Con mucho gusto, María. Quedamos pendientes. ¡Que tenga un excelente día!');
+  await w(600);document.getElementById('st-calls').textContent=String(parseInt(document.getElementById('st-calls').textContent)+1);
+  toast('✦ Llamada finalizada · Protocolo completo');
+  btn.disabled=false;btn.textContent='▶\u2003Demo llamada';
+}
+renderProto();
+connectWPS();
+</script>
+</body>
+</html>
