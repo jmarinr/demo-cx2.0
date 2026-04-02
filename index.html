@@ -55,7 +55,7 @@ body{font-family:var(--f);background:var(--bg);color:var(--t1);font-size:13px;li
   display:flex;align-items:center;
   padding:0 18px;gap:0;
 }
-/* logo handled by inline SVG */
+/* logo: img tag inline */
 .hdiv{width:1px;height:22px;background:rgba(255,255,255,.22);margin:0 16px;flex-shrink:0;}
 .h-agent{display:flex;align-items:center;gap:9px;}
 .h-av{
@@ -278,14 +278,11 @@ body{font-family:var(--f);background:var(--bg);color:var(--t1);font-size:13px;li
 
   <!-- HEADER -->
   <div class="hdr">
-    <!-- Nisato logo: wave icon + wordmark -->
-    <svg height="30" viewBox="0 0 180 30" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
-      <!-- Wave/tilde icon -->
-      <path d="M4 20 C7 12, 13 12, 16 16 C19 20, 25 20, 28 12" stroke="white" stroke-width="3.2" stroke-linecap="round" fill="none"/>
-      <path d="M4 26 C7 18, 13 18, 16 22 C19 26, 25 26, 28 18" stroke="white" stroke-width="3.2" stroke-linecap="round" fill="none"/>
-      <!-- NISATO wordmark -->
-      <text x="38" y="23" font-family="Montserrat, sans-serif" font-size="20" font-weight="800" fill="white" letter-spacing="1">NISATO</text>
-    </svg>
+    <img
+      src="https://static.wixstatic.com/media/d8db76_3a8fc84cc80841c085c4b6a5613aa058~mv2.png/v1/fill/w_732,h_106,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/Nisato%20BLANCO.png"
+      alt="Nisato"
+      style="height:28px;width:auto;flex-shrink:0;object-fit:contain;"
+    />
     <div class="hdiv"></div>
     <div class="h-agent">
       <div class="h-av">👤</div>
