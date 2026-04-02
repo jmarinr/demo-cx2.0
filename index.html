@@ -268,7 +268,65 @@ body{font-family:var(--f);background:var(--bg);color:var(--t1);font-size:13px;li
 .tbtn:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-s);}
 .tbtn.ok{background:var(--green-s);border-color:rgba(5,150,105,.22);color:var(--green);}
 
-/* Toast */
+/* ── TUTORIAL CARD ── */
+.tut-card{
+  position:fixed;bottom:28px;left:50%;
+  transform:translateX(-50%) translateY(180px);
+  width:500px;
+  background:var(--white);
+  border-radius:16px;
+  box-shadow:0 24px 64px rgba(0,0,0,.14),0 4px 16px rgba(0,0,0,.08);
+  border:2px solid var(--brand);
+  padding:22px 26px 18px;
+  z-index:500;
+  transition:transform .45s cubic-bezier(.34,1.46,.64,1);
+  pointer-events:all;
+}
+.tut-card.show{transform:translateX(-50%) translateY(0);}
+.tut-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.tut-badge{
+  font-family:var(--m);font-size:9px;font-weight:600;
+  letter-spacing:1.2px;color:var(--brand);
+  background:var(--brand-s);border:1px solid var(--brand-m);
+  border-radius:20px;padding:4px 11px;
+}
+.tut-step{font-family:var(--m);font-size:10px;color:var(--t3);font-weight:500;}
+.tut-title{font-size:17px;font-weight:800;color:var(--t1);margin-bottom:8px;line-height:1.3;}
+.tut-desc{font-size:13px;color:var(--t2);line-height:1.7;margin-bottom:18px;font-weight:500;}
+.tut-foot{display:flex;align-items:center;justify-content:space-between;}
+.tut-dots{display:flex;gap:5px;}
+.tut-dot{width:7px;height:7px;border-radius:50%;background:var(--s3);transition:background .3s;}
+.tut-dot.active{background:var(--brand);}
+.tut-dot.done{background:var(--brand);opacity:.35;}
+.tut-btn{
+  background:var(--brand);color:#fff;border:none;
+  padding:9px 22px;border-radius:8px;
+  font-family:var(--f);font-size:12px;font-weight:700;
+  cursor:pointer;transition:background .15s,transform .1s;letter-spacing:.3px;
+}
+.tut-btn:hover{background:#1644a8;}
+.tut-btn:active{transform:scale(.97);}
+
+/* FINAL card */
+.tut-fin{
+  display:none;
+  position:fixed;inset:0;
+  background:rgba(26,80,200,.55);
+  backdrop-filter:blur(4px);
+  z-index:600;
+  flex-direction:column;align-items:center;justify-content:center;gap:10px;
+}
+.tut-fin.show{display:flex;}
+.tut-fin-ico{font-size:52px;margin-bottom:4px;}
+.tut-fin-title{font-size:28px;font-weight:800;color:#fff;}
+.tut-fin-sub{font-size:14px;color:rgba(255,255,255,.75);font-weight:500;text-align:center;max-width:380px;line-height:1.6;}
+.tut-fin-btn{
+  margin-top:16px;background:#fff;color:var(--brand);border:none;
+  padding:12px 28px;border-radius:10px;
+  font-family:var(--f);font-size:13px;font-weight:700;cursor:pointer;
+  transition:background .15s;
+}
+.tut-fin-btn:hover{background:#f0f3ff;}
 .toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--t1);color:#fff;padding:9px 18px;border-radius:var(--r);font-family:var(--m);font-size:9px;font-weight:500;z-index:9999;transition:transform .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none;white-space:nowrap;box-shadow:0 8px 28px rgba(0,0,0,.2);letter-spacing:.2px;}
 .toast.show{transform:translateX(-50%) translateY(0);}
 </style>
@@ -386,6 +444,25 @@ body{font-family:var(--f);background:var(--bg);color:var(--t1);font-size:13px;li
   </div>
 </div>
 <div class="toast" id="toast"></div>
+<!-- TUTORIAL CARD -->
+<div class="tut-card" id="tut-card">
+  <div class="tut-top">
+    <div class="tut-badge">▶ DEMO GUIADO</div>
+    <div class="tut-step" id="tut-step">1 / 8</div>
+  </div>
+  <div class="tut-title" id="tut-title">—</div>
+  <div class="tut-desc" id="tut-desc">—</div>
+  <div class="tut-foot">
+    <div class="tut-dots" id="tut-dots"></div>
+    <button class="tut-btn" id="tut-btn" onclick="resumeDemo()">Continuar &rarr;</button>
+  </div>
+</div>
+<div class="tut-fin" id="tut-fin">
+  <div class="tut-fin-ico">🎉</div>
+  <div class="tut-fin-title">Demo completo</div>
+  <div class="tut-fin-sub">Así funciona Nisato Soporte AI en una llamada real</div>
+  <button class="tut-fin-btn" onclick="closeFin()">Volver a inicio</button>
+</div>
 
 <script>
 const CFG={
@@ -543,6 +620,7 @@ function handleMsg(p){
     }catch(e){console.warn(e);}
   }
 }
+/* ═══════════════ UTILS ═══════════════ */
 const w=ms=>new Promise(r=>setTimeout(r,ms));
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),3000);}
 function resetUI(){
@@ -554,43 +632,205 @@ function resetUI(){
   setSentiment(0,'Esperando llamada…');
   document.getElementById('tick-empty').style.display='block';document.getElementById('tick-bld').style.display='none';document.getElementById('tick-fields').innerHTML='';document.getElementById('tick-ok').classList.remove('show');
 }
-async function runDemo(){
-  const btn=document.getElementById('btn-demo');btn.disabled=true;btn.textContent='⏳  En llamada…';
+
+/* ═══════════════ TUTORIAL SYSTEM ═══════════════ */
+const TUT_STEPS = [
+  {
+    title:'👋 Bienvenido al Demo de Nisato Soporte AI',
+    desc:'Esta herramienta asiste a los agentes de soporte técnico en tiempo real durante una llamada. Verás cómo el sistema detecta automáticamente el cliente, el equipo, el síntoma y guía al agente paso a paso. Haz clic en Continuar para iniciar la llamada de demostración.',
+  },
+  {
+    title:'📋 Protocolo de atención activado',
+    desc:'En el panel izquierdo puedes ver el Protocolo de Atención. Tiene 7 pasos estándar. Conforme avanza la conversación, el sistema detecta automáticamente en qué paso está el agente y lo resalta en azul. Los pasos completados quedan marcados en verde.',
+  },
+  {
+    title:'👤 Cliente identificado automáticamente',
+    desc:'El AI escuchó el nombre y número de cliente en la conversación y los extrajo sin que el agente tenga que teclearlos. En el panel derecho verás la información del cliente aparecer en tiempo real. Esto reduce errores y ahorra tiempo.',
+  },
+  {
+    title:'🏷️ Equipo detectado: marca y modelo',
+    desc:'El sistema identificó el tipo de producto (lavadora), la marca (Samsung) y el modelo (WF18T8000) directamente de lo que dijo el cliente. Esta información aparece en la tarjeta del cliente para que el agente tenga contexto completo.',
+  },
+  {
+    title:'🔧 Guía de troubleshooting cargada',
+    desc:'Aquí ocurre la magia. El AI detectó el síntoma ("no desagua") y cargó automáticamente los 5 pasos de diagnóstico específicos para ese problema en esa lavadora. El agente no necesita buscar en manuales — el sistema le dice exactamente qué revisar.',
+  },
+  {
+    title:'✗ Pasos fallidos quedan registrados',
+    desc:'A medida que el agente va probando cada paso con el cliente, el sistema registra visualmente cuáles funcionaron y cuáles no. Los pasos en rojo tachado son los que el cliente ya intentó sin éxito. Esto evita repetir lo que no sirve.',
+  },
+  {
+    title:'🎟️ Escalación automática: creando ticket',
+    desc:'El código de error E21 confirmó una falla en la bomba de drenaje — algo que no se puede resolver por teléfono. El sistema toma la decisión de escalar y genera automáticamente el ticket en Nisato Helpdesk con toda la información ya recopilada durante la llamada.',
+  },
+  {
+    title:'✅ Protocolo completo — llamada finalizada',
+    desc:'El agente completó los 7 pasos del protocolo. El sentimiento del cliente pasó de frustrado a satisfecho. Las estadísticas del día se actualizaron. Todo sin que el agente tuviera que abrir un manual, buscar en sistemas o teclear datos manualmente.',
+  },
+];
+
+let _resumeFn = null;
+let _tutStep = 0;
+
+function showTutorial(stepIndex) {
+  return new Promise(resolve => {
+    _resumeFn = resolve;
+    _tutStep = stepIndex;
+    const s = TUT_STEPS[stepIndex];
+    const card = document.getElementById('tut-card');
+    document.getElementById('tut-title').textContent = s.title;
+    document.getElementById('tut-desc').textContent = s.desc;
+    document.getElementById('tut-step').textContent = (stepIndex + 1) + ' / ' + TUT_STEPS.length;
+    // dots
+    const dots = document.getElementById('tut-dots');
+    dots.innerHTML = '';
+    TUT_STEPS.forEach((_, i) => {
+      const d = document.createElement('div');
+      d.className = 'tut-dot' + (i === stepIndex ? ' active' : i < stepIndex ? ' done' : '');
+      dots.appendChild(d);
+    });
+    // last step: change button text
+    document.getElementById('tut-btn').textContent = stepIndex === TUT_STEPS.length - 1 ? '¡Listo! 🎉' : 'Continuar →';
+    card.classList.add('show');
+  });
+}
+
+function resumeDemo() {
+  const card = document.getElementById('tut-card');
+  card.classList.remove('show');
+  if (_resumeFn) { const fn = _resumeFn; _resumeFn = null; fn(); }
+}
+
+function closeFin() {
+  document.getElementById('tut-fin').classList.remove('show');
   resetUI();
-  await w(350);setStep(1);
-  addLine('agente','Buenos días, habla con Carlos López de Soporte Técnico Nisato. ¿En qué le puedo ayudar hoy?');
-  await w(2800);addLine('cliente','Hola buenos días. Soy María González, mi número de cliente es 48291. Tengo un problema con mi lavadora que lleva días sin funcionar bien.');
-  await w(900);setStep(2);setCustomer({nom:'María González',num:'48291'});setSentiment(0,'Tranquila pero con urgencia');toast('Cliente identificado');
-  await w(1100);addLine('agente','Con gusto, María. ¿Me podría indicar la marca y modelo de su lavadora?');
-  await w(2500);addLine('cliente','Es una Samsung. El modelo que aparece al frente es WF18T8000. La compré hace casi dos años.');
-  await w(900);setStep(3);setProduct({prod:'lavadora',marca:'Samsung',modelo:'WF18T8000'});toast('Equipo identificado');
-  await w(1100);addLine('agente','Gracias. ¿Cuál es exactamente el problema que está presentando?');
-  await w(2500);addLine('cliente','Al terminar el ciclo el agua se queda adentro y no sale. No drena nada.');
-  await w(900);setStep(4);setSentiment(0,'Algo molesta, lleva días con el problema');toast('Síntoma detectado: no desagua');loadTS('lavadora','no desagua');
-  await w(600);setStep(5);
-  await w(900);setTSI(0,'active');addLine('agente','Revisemos primero la manguera de desagüe. ¿Está recta, sin dobleces ni bloqueos?');
-  await w(2800);addLine('cliente','Ya la revisé y está bien. Recta y sin ningún bloqueo.');
-  await w(700);setTSI(0,'failed');setTSI(1,'active');
-  await w(800);addLine('agente','Ahora el filtro de la bomba, en la parte frontal inferior detrás de una pequeña tapa.');
-  await w(2800);addLine('cliente','Lo limpié la semana pasada y estaba completamente limpio.');
-  await w(700);setTSI(1,'failed');setTSI(2,'active');setSentiment(-1,'Comienza a mostrar frustración');
-  await w(800);addLine('agente','Ejecutemos solo el ciclo de centrifugado para intentar forzar que el agua salga.');
-  await w(3000);addLine('cliente','Lo he intentado varias veces estos días y sigue igual. No drena nada de agua.');
-  await w(700);setTSI(2,'failed');setTSI(3,'active');
-  await w(800);addLine('agente','¿Hay algún código de error parpadeando en la pantalla de la lavadora en este momento?');
-  await w(2500);addLine('cliente','Sí, está parpadeando el código E21 en la pantalla.');
-  await w(700);setTSI(3,'done');setSentiment(-1,'Preocupada, quiere una solución definitiva');toast('⚠ E21 = falla en bomba de drenaje → escalar');
-  await w(1200);setStep(6);addLine('agente','El código E21 indica falla en la bomba de drenaje. Requiere revisión técnica presencial. Le creo un ticket ahora mismo.');
-  await w(700);await createTicket({nom:'María González',num:'48291',prod:'Lavadora Samsung WF18T8000',sint:'No drena — Error E21 (bomba de drenaje)'});
-  await w(500);finishTicket('NST-2026-0847');
-  await w(1800);addLine('cliente','¿Cuánto tiempo tardaría el técnico en llegar?');
-  await w(2000);addLine('agente','Un técnico certificado la contactará en las próximas 24 horas. El ticket es NST-2026-0847, guárdelo como referencia.');
-  await w(2500);addLine('cliente','Perfecto, muchas gracias Carlos. Muy amable.');
-  await w(800);setSentiment(1,'Satisfecha con la atención recibida');setStep(7);
-  await w(900);addLine('agente','Con mucho gusto, María. Quedamos pendientes. ¡Que tenga un excelente día!');
-  await w(600);document.getElementById('st-calls').textContent=String(parseInt(document.getElementById('st-calls').textContent)+1);
-  toast('✦ Llamada finalizada · Protocolo completo');
-  btn.disabled=false;btn.textContent='▶\u2003Demo llamada';
+  document.getElementById('btn-demo').disabled = false;
+  document.getElementById('btn-demo').textContent = '▶\u2003Demo llamada';
+}
+
+/* ═══════════════ DEMO ═══════════════ */
+async function runDemo(){
+  const btn=document.getElementById('btn-demo');
+  btn.disabled=true; btn.textContent='⏳  En llamada…';
+  resetUI();
+
+  // ── TUTORIAL 0: Bienvenida ──
+  await showTutorial(0);
+
+  // PASO 1: Saludo
+  await w(500); setStep(1);
+  addLine('agente','Buenos días, le habla Carlos López de Soporte Técnico Nisato. ¿En qué le puedo ayudar el día de hoy?');
+  await w(3500);
+  addLine('cliente','Hola Carlos, buenos días. Mire, yo soy María González, mi número de cliente es el 48291. Llevo como tres días con un problema con mi lavadora y ya no sé qué hacer.');
+  await w(1800);
+
+  // ── TUTORIAL 1: Protocolo ──
+  await showTutorial(1);
+
+  setStep(2);
+  setCustomer({nom:'María González', num:'48291'});
+  setSentiment(0,'Tranquila pero con urgencia');
+  toast('Cliente identificado automáticamente');
+  await w(1200);
+
+  // ── TUTORIAL 2: Cliente identificado ──
+  await showTutorial(2);
+
+  addLine('agente','Con mucho gusto, María. Lamento el inconveniente. Para poder ayudarle mejor, ¿me podría decir la marca y el modelo de su lavadora?');
+  await w(3800);
+  addLine('cliente','Sí claro, es una Samsung. El modelo que aparece aquí adelante dice WF18T8000. La compré hace como un año y ocho meses, casi dos años.');
+  await w(1800); setStep(3);
+  setProduct({prod:'lavadora', marca:'Samsung', modelo:'WF18T8000'});
+  toast('Equipo identificado automáticamente');
+  await w(1000);
+
+  // ── TUTORIAL 3: Equipo identificado ──
+  await showTutorial(3);
+
+  addLine('agente','Perfecto, registrado. Samsung WF18T8000. ¿Y cuál es exactamente el problema que está presentando la lavadora, María?');
+  await w(4000);
+  addLine('cliente','Lo que pasa es que termina el ciclo de lavado y el agua se queda adentro. No sale nada. Ya intenté varios ciclos y siempre lo mismo — el agua no drena.');
+  await w(1800); setStep(4);
+  setSentiment(0,'Algo molesta, lleva días con el problema');
+  toast('Síntoma detectado: no desagua');
+  loadTS('lavadora','no desagua');
+  await w(800); setStep(5);
+  await w(600);
+
+  // ── TUTORIAL 4: Troubleshooting cargado ──
+  await showTutorial(4);
+
+  // Troubleshooting paso 0
+  setTSI(0,'active');
+  addLine('agente','Entiendo perfectamente, eso es muy frustrante. Vamos a revisarlo juntos. Primero que todo, ¿puede revisar la manguera de desagüe? Es la que sale por la parte trasera. ¿Está completamente recta, sin dobleces ni algo que la esté bloqueando?');
+  await w(4200);
+  addLine('cliente','Sí, ya la revisé ayer precisamente. Está bien estirada, no tiene ningún doblez y no hay nada bloqueándola.');
+  await w(1500); setTSI(0,'failed'); setTSI(1,'active');
+  await w(600);
+
+  addLine('agente','De acuerdo. Ahora revisemos el filtro de la bomba. Está en la parte frontal inferior de la lavadora, detrás de una pequeña tapita. ¿Podría abrirla y ver si tiene pelusa o algo acumulado adentro?');
+  await w(4500);
+  addLine('cliente','Lo revisé la semana pasada justamente porque pensé que era eso. Lo limpié bien y estaba completamente limpio, no había nada.');
+  await w(1500); setTSI(1,'failed'); setTSI(2,'active');
+  setSentiment(-1,'Comienza a mostrar frustración');
+  await w(600);
+
+  // ── TUTORIAL 5: Pasos fallidos ──
+  await showTutorial(5);
+
+  addLine('agente','Entiendo. Muy bien que ya lo revisó. Ahora intentemos algo: vamos a ejecutar solo el ciclo de centrifugado, sin lavar ropa. Eso a veces fuerza a que el agua salga. ¿Podría intentarlo ahora?');
+  await w(4500);
+  addLine('cliente','Sí, espere... ya lo puse... listo, ya terminó. Y nada, el agua sigue adentro completamente. No drenó nada.');
+  await w(1500); setTSI(2,'failed'); setTSI(3,'active');
+
+  await w(600);
+  addLine('agente','Muy bien, gracias por intentarlo. Una última cosa muy importante: ¿hay algún número o código parpadeando en la pantalla de la lavadora en este momento?');
+  await w(4000);
+  addLine('cliente','Ay sí, tiene un código que está parpadeando. Dice E21. Estaba preguntándome qué significaba eso.');
+  await w(1500); setTSI(3,'done');
+  setSentiment(-1,'Preocupada, quiere una solución definitiva');
+  toast('⚠ E21 detectado = falla en bomba de drenaje');
+  await w(800);
+
+  addLine('agente','Ahí está. El código E21 nos dice exactamente lo que está pasando — es una falla en la bomba de drenaje. Lamentablemente eso no se puede resolver por teléfono, necesita revisión de un técnico certificado.');
+  await w(3500);
+
+  // ── TUTORIAL 6: Ticket ──
+  await showTutorial(6);
+
+  setStep(6);
+  addLine('agente','Lo que voy a hacer ahora mismo es crearle un ticket de servicio técnico en nuestro sistema. Un técnico certificado Nisato va a contactarla dentro de las próximas 24 horas para coordinar la visita.');
+
+  await w(800);
+  await createTicket({
+    nom:'María González', num:'48291',
+    prod:'Lavadora Samsung WF18T8000',
+    sint:'No drena — Error E21 (bomba de drenaje)',
+  });
+  await w(500);
+  finishTicket('NST-2026-0847');
+
+  await w(3000);
+  addLine('cliente','Muchas gracias Carlos. ¿Y el técnico me puede dar una hora aproximada de llegada? Es que trabajo y necesito organizarme.');
+  await w(3500);
+  addLine('agente','Por supuesto. Cuando el técnico la contacte le va a dar una ventana de tiempo específica. El número de su ticket es NST-2026-0847 — anótelo por si necesita hacer seguimiento. ¿Algo más en lo que pueda ayudarle?');
+  await w(3500);
+  addLine('cliente','No, eso es todo. La verdad quedé muy satisfecha con la atención, Carlos. Muy profesional todo.');
+  await w(1500);
+  setSentiment(1,'Satisfecha con la atención recibida');
+  setStep(7);
+  await w(1200);
+  addLine('agente','Muchas gracias a usted, María. Para nosotros es un placer poder ayudarle. Le deseamos un excelente día y estamos pendientes de que su caso se resuelva.');
+
+  await w(1500);
+  const c=document.getElementById('st-calls');
+  c.textContent=String(parseInt(c.textContent)+1);
+
+  // ── TUTORIAL 7: Final ──
+  await showTutorial(7);
+
+  // Show final screen
+  document.getElementById('tut-fin').classList.add('show');
 }
 renderProto();
 connectWPS();
